@@ -416,6 +416,20 @@ public class Target
     }
 
     int ports = Integer.parseInt(reader.readLine());
+
+    if(ports > 0){
+      // Backward compatibility: older app versions wrote mPorts.size() twice.
+      // If the next line is another plain integer, consume it as a legacy duplicate.
+      reader.mark(256);
+      String maybeLegacyPortCount = reader.readLine();
+      if(maybeLegacyPortCount != null){
+        String trimmed = maybeLegacyPortCount.trim();
+        if(!(trimmed.matches("^\\d+$") && !maybeLegacyPortCount.contains("|"))){
+          reader.reset();
+        }
+      }
+    }
+
     for(int i = 0; i < ports; i++){
       String key = reader.readLine();
       String[] parts = key.split("\\|", 4);
@@ -458,7 +472,6 @@ public class Target
     }
 
     builder.append(mPorts.size()).append("\n");
-    builder.append( mPorts.size() + "\n" );
     for( Port port : mPorts )
     {
       String key = port.toString();
